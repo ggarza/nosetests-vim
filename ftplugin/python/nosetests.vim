@@ -1,10 +1,12 @@
 "
 " Python filetype plugin for running nosetests
 " Language:     Python (ft=python)
-" Maintainer:   Vincent Driessen <vincent@datafox.nl>
+" Maintainer:   Guillermo Garza
 " Version:      Vim 7 (may work with lower Vim versions, but not tested)
-" URL:          http://github.com/nvie/vim-nosetests
+" URL:          http://github.com/ggarza/nosetests-vim
 "
+" Based on http://github.com/nvie/vim-pep8
+
 " Only do this when not done yet for this buffer
 if exists("b:loaded_nosetests_ftplugin")
     finish
@@ -12,21 +14,6 @@ endif
 let b:loaded_nosetests_ftplugin = 1
 
 let s:nosetests_cmd="nosetests"
-
-hi RedBar ctermfg=white ctermbg=red guibg=red
-hi GreenBar ctermfg=white ctermbg=green guibg=green
-
-function! RedBar()
-    echohl RedBar
-    echon repeat(" ",&columns - 1)
-    echohl
-endfunction
-
-function! GreenBar()
-    echohl GreenBar
-    echon repeat(" ",&columns - 1)
-    echohl
-endfunction
 
 if !exists("*Nosetests()")
     function Nosetests()
@@ -42,6 +29,9 @@ if !exists("*Nosetests()")
         let l:old_gfm=&grepformat
         let l:old_gp=&grepprg
 
+        hi RedBar ctermfg=white ctermbg=red guibg=red
+        hi GreenBar ctermfg=white ctermbg=green guibg=green
+
         " write any changes before continuing
         if &readonly == 0
             silent update
@@ -50,8 +40,7 @@ if !exists("*Nosetests()")
         " perform the grep itself
         let &grepformat="%f:%l:\ fail:\ %m,%f:%l:\ error:\ %m"
         let &grepprg=s:nosetests_cmd . " --with-machineout"
-        " let &grepformat="%-C\ %.%#,%A\ \ File\ \"%f\"\\,\ line\ %l%.%#,%Z%[%^\ ]%\\@=%m,%-G%.%#"
-        " let &grepprg="nosetests"
+
         silent! grep!
 
         " restore grep settings
@@ -67,42 +56,15 @@ if !exists("*Nosetests()")
             let error_message = substitute(error['text'], '^ *', '', 'g')
             " silent exec ":sbuffer " . error['bufnr']
             " silent 2cc!
-            " call RedBar()
             echohl RedBar
             echomsg error_message
             echohl
         else
-            " call GreenBar()
-            let error_message = "All tests OK!"
             echohl GreenBar
-            echomsg error_message
-            " echomsg "All tests OK!"
+            echomsg "All tests OK!"
             echohl
         endif
 
-        " open cwindow
-        " let has_results=getqflist() != []
-        " if has_results
-        "     " execute 'belowright copen'
-        "     " setlocal wrap
-        "     " nnoremap <buffer> <silent> c :cclose<CR>
-        "     " nnoremap <buffer> <silent> q :cclose<CR>
-        "     hi Red guibg=red guifg=black
-        "     echohl Green
-        "     echon "All tests OK!"
-        "     echohl
-        " endif
-" 
-        " set nolazyredraw
-        " redraw!
-" 
-        " if has_results == 0
-        "     " Show OK status
-        "     hi Green guibg=green guifg=black
-        "     echohl Green
-        "     echon "All tests OK!"
-        "     echohl
-        " endif
     endfunction
 endif
 
