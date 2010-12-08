@@ -1,4 +1,3 @@
-"
 " Python filetype plugin for running nosetests
 " Language:     Python (ft=python)
 " Maintainer:   Guillermo Garza
@@ -22,7 +21,7 @@ if !exists("*Nosetests()")
             return
         endif
 
-        set lazyredraw   " delay redrawing
+        " set lazyredraw   " delay redrawing
         cclose           " close any existing cwindows
 
         " store old grep settings (to restore later)
@@ -42,6 +41,7 @@ if !exists("*Nosetests()")
         let &grepprg=s:nosetests_cmd . " --with-machineout"
 
         silent! grep!
+        redraw!
 
         " restore grep settings
         let &grepformat=l:old_gfm
@@ -55,13 +55,13 @@ if !exists("*Nosetests()")
             endfor
             let error_message = substitute(error['text'], '^ *', '', 'g')
             " silent exec ":sbuffer " . error['bufnr']
-            " silent 2cc!
+            " silent cc!
             echohl RedBar
             echomsg error_message
             echohl
         else
             echohl GreenBar
-            echomsg "All tests OK!"
+            echomsg "All tests passed!                      "
             echohl
         endif
 
